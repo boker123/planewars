@@ -16,6 +16,7 @@ class Enemy(Sprite):
 
         # 设置外星人初始的位置
         self.rect.topleft = seat
+        self.direction = xz_settings.fleet_direction
 
     def blitme(self):
         self.screen.blit(self.image,self.rect)
@@ -30,7 +31,7 @@ class Enemy(Sprite):
 
     def update(self):
         """向右移动外新人"""
-        self.rect.x += (self.xz_settings.enemy_speed_factor * self.xz_settings.fleet_direction)
+        self.rect.x += (self.xz_settings.enemy_speed_factor * self.direction)
         self.rect.y += self.xz_settings.fleet_drop_speed
     
     
