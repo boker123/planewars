@@ -18,3 +18,7 @@ class Plane():
     def blitme(self):
         """在指定位置绘制校长"""
         self.screen.blit(self.image,self.rect)
+
+    def center_ship(self):
+        self.rect.centerx = self.screen_rect.centerx
+        self.rect.bottom = self.screen_rect.bottom

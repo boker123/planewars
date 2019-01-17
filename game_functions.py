@@ -2,9 +2,9 @@ import sys
 import pygame
 from bullet import Bullet
 from enemy import Enemy
+from time import sleep
 
-
-def check_events(xz_settings,screen,plane,bullets):
+def check_events(xz_settings,screen,stats,play_button,plane,enemys,bullets):
     """响应按键和鼠标事件"""
     for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -18,6 +18,10 @@ def check_events(xz_settings,screen,plane,bullets):
                     print("q")
                     sys.exit()
                     pygame.quit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_x,mouse_y = pygame.mouse.get_pos()
+                print(mouse_x,mouse_y)
+                check_play_button(xz_settings,screen,stats,play_button,plane,enemys,bullets,mouse_x,mouse_y)
 
     # 让校长连续移动
     keys = pygame.key.get_pressed()
@@ -34,7 +38,26 @@ def check_events(xz_settings,screen,plane,bullets):
         print("DOWN")
         plane.rect.centery += xz_settings.plane_speed_factor
 
-def update_screen(xz_settings,screen,plane,enemys,bullets):
+def check_play_button(xz_settings,screen,stats,play_button,plane,enemys,bullets,
+mouse_x,mouse_y):
+    """在点击Play时开始游戏"""
+    button_clicked = play_button.rect.collidepoint(mouse_x,mouse_y)
+    if button_clicked and not stats.game_active:
+        # 隐藏光标
+        pygame.mouse.set_visible(False)
+        if play_button.rect.collidepoint(mouse_x,mouse_y):
+            stats.reset_stats()
+            stats.game_active = True
+
+            # 清空敌机列表和子弹列表
+            enemys.empty()
+            bullets.empty()
+
+            # 创建一群敌机，让飞船居中
+            create_fleet(xz_settings,screen,plane,enemys)
+            plane.center_ship()
+
+def update_screen(xz_settings,stats,screen,plane,enemys,bullets,play_button):
     """ 更新屏幕上的图像，并且切换到屏幕"""
 
     # 绘制屏幕
@@ -44,6 +67,10 @@ def update_screen(xz_settings,screen,plane,enemys,bullets):
         bullet.draw_bullet()
     plane.blitme()
     enemys.draw(screen)
+
+    # 如果游戏处于非激活状态，就绘制Play按钮
+    if not stats.game_active:
+        play_button.draw_button()
 
     # 让最近绘制的屏幕可见
     pygame.display.flip()
@@ -104,7 +131,36 @@ def change_fleet_direction(xz_settings,enemys):
         enemy.rect.y += xz_settings.fleet_drop_speed
     xz_settings.fleet_direction *= -1
 
-def update_enemys(xz_settings,plane,enemys):
+def plane_hit(xz_settings,stats,screen,plane,enemys,bullets):
+    """响应敌机撞击的飞船"""
+    if stats.planes_left > 1:
+        # 将planes_left -= 1
+        stats.planes_left -= 1
+
+        # 清空敌机列表和子弹列表
+        enemys.empty()
+        bullets.empty()
+
+        # 创建一群新的敌机，将飞船移动回初始位置
+        create_fleet(xz_settings,screen,plane,enemys)
+        plane.center_ship()
+        
+        # 暂停
+        sleep(0.5)
+    else:
+        stats.game_active = False
+        pygame.mouse.set_visible(True)
+
+def check_enemy_botttom(xz_settings,stats,screen,plane,enemys,bullets):
+    """检查是否有敌机到达屏幕底端"""
+    screen_rect = screen.get_rect()
+    for enemy in enemys.sprites():
+        if enemy.rect.bottom >= screen_rect.bottom:
+            # 像校长被撞一样的处理
+            plane_hit(xz_settings,stats,screen,plane,enemys,bullets)
+            break
+
+def update_enemys(xz_settings,stats,screen,plane,enemys,bullets):
     """更新敌机的位置"""
     check_fleet_edges(xz_settings,enemys)
     enemys.update()
@@ -112,3 +168,7 @@ def update_enemys(xz_settings,plane,enemys):
     # 检测敌机和飞船碰撞
     if pygame.sprite.spritecollideany(plane,enemys):
         print("Plane hit!!!")
+        plane_hit(xz_settings,stats,screen,plane,enemys,bullets)
+    
+    # 检查是否有敌机越界
+    check_enemy_botttom(xz_settings,stats,screen,plane,enemys,bullets)

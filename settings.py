@@ -14,7 +14,7 @@ class Settings():
 
         # 校长的设置
         self.plane_speed_factor = 3
-        self.ship_health = 3
+        self.plane_health = 3
 
         # 子弹的设置
         self.bullet_speed_factor = 5

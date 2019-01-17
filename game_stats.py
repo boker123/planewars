@@ -5,7 +5,8 @@ class GameStats():
         """初始化统计信息"""
         self.xz_settings = xz_settings
         self.reset_stats()
+        self.game_active = False
 
     def reset_stats(self):
         """初始化可变信息"""
-        self.planes_left = self.xz_settings.ship_limit
+        self.planes_left = self.xz_settings.plane_health
