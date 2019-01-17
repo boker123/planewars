@@ -11,7 +11,7 @@ class Enemy(Sprite):
         self.xz_settings = xz_settings
 
         # 加载敌机图像，设置rect值
-        self.image = pygame.image.load('images/wsc1.png')
+        self.image = pygame.image.load('images/enemy.png')
         self.rect = self.image.get_rect()
 
         # 设置外星人初始的位置

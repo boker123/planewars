@@ -11,7 +11,7 @@ class Bullet(Sprite):
         self.screen = screen
 
         # 创建子弹并设置其位置
-        self.image = pygame.image.load('images/wsc3.png')
+        self.image = pygame.image.load('images/bullet2.png')
         self.rect = self.image.get_rect()
         self.rect.centerx = plane.rect.centerx
         self.rect.top = plane.rect.top

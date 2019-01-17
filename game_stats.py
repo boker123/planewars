@@ -10,3 +10,5 @@ class GameStats():
     def reset_stats(self):
         """初始化可变信息"""
         self.planes_left = self.xz_settings.plane_health
+        self.score = 0
+        self.level = 1

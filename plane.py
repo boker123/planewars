@@ -1,13 +1,15 @@
 import pygame
+from pygame.sprite import Sprite
 
 # 创建飞机模型
-class Plane():
-    def __init__(self,screen):
+class Plane(Sprite):
+    def __init__(self,xz_settings,screen):
         """初始化校长设置其初始位置"""
+        super(Plane,self).__init__()
         self.screen = screen
 
         # 加载飞船图像获取其外接矩形
-        self.image = pygame.image.load('images/wsc2.png')
+        self.image = pygame.image.load('images/plane.png')
         self.rect = self.image.get_rect()
         self.screen_rect = screen.get_rect()
 

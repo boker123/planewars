@@ -4,7 +4,7 @@ from bullet import Bullet
 from enemy import Enemy
 from time import sleep
 
-def check_events(xz_settings,screen,stats,play_button,plane,enemys,bullets):
+def check_events(xz_settings,screen,stats,sb,play_button,plane,enemys,bullets,bullet_sound):
     """响应按键和鼠标事件"""
     for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -13,6 +13,7 @@ def check_events(xz_settings,screen,stats,play_button,plane,enemys,bullets):
             # 用点击空格射击子弹
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
+                    bullet_sound.play()
                     fire_bullet(xz_settings,screen,plane,bullets)
                 elif event.key == pygame.K_q:
                     print("q")
@@ -21,7 +22,7 @@ def check_events(xz_settings,screen,stats,play_button,plane,enemys,bullets):
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x,mouse_y = pygame.mouse.get_pos()
                 print(mouse_x,mouse_y)
-                check_play_button(xz_settings,screen,stats,play_button,plane,enemys,bullets,mouse_x,mouse_y)
+                check_play_button(xz_settings,screen,stats,sb,play_button,plane,enemys,bullets,mouse_x,mouse_y)
 
     # 让校长连续移动
     keys = pygame.key.get_pressed()
@@ -38,16 +39,29 @@ def check_events(xz_settings,screen,stats,play_button,plane,enemys,bullets):
         print("DOWN")
         plane.rect.centery += xz_settings.plane_speed_factor
 
-def check_play_button(xz_settings,screen,stats,play_button,plane,enemys,bullets,
+def check_play_button(xz_settings,screen,stats,sb,play_button,plane,enemys,bullets,
 mouse_x,mouse_y):
     """在点击Play时开始游戏"""
     button_clicked = play_button.rect.collidepoint(mouse_x,mouse_y)
     if button_clicked and not stats.game_active:
+        # 重置游戏
+        xz_settings.initialize_dynamic_settings()
+
         # 隐藏光标
         pygame.mouse.set_visible(False)
+
         if play_button.rect.collidepoint(mouse_x,mouse_y):
             stats.reset_stats()
             stats.game_active = True
+
+            # 创建游戏时的背景音乐
+            pygame.mixer.music.load("sounds/bgm4.mp3")
+            pygame.mixer.music.play(loops=-1, start=0.0)
+
+            # 重置记分牌图像
+            sb.prep_score()
+            sb.prep_level()
+            sb.prep_plane()
 
             # 清空敌机列表和子弹列表
             enemys.empty()
@@ -57,7 +71,7 @@ mouse_x,mouse_y):
             create_fleet(xz_settings,screen,plane,enemys)
             plane.center_ship()
 
-def update_screen(xz_settings,stats,screen,plane,enemys,bullets,play_button):
+def update_screen(xz_settings,stats,sb,screen,plane,enemys,bullets,play_button):
     """ 更新屏幕上的图像，并且切换到屏幕"""
 
     # 绘制屏幕
@@ -68,14 +82,17 @@ def update_screen(xz_settings,stats,screen,plane,enemys,bullets,play_button):
     plane.blitme()
     enemys.draw(screen)
 
-    # 如果游戏处于非激活状态，就绘制Play按钮
+    # 显示计分器
+    sb.show_score()
+
+    # 如果游戏处于非激活状态，就绘制Play按钮，重新加载背景音乐
     if not stats.game_active:
         play_button.draw_button()
 
     # 让最近绘制的屏幕可见
     pygame.display.flip()
 
-def update_bullets(xz_settings,screen,plane,enemys,bullets):
+def update_bullets(xz_settings,screen,stats,sb,plane,enemys,bullets,enemy_down):
     """更新子弹的位置，删除消失的子弹"""
 
     # 更新子弹的位置
@@ -90,9 +107,20 @@ def update_bullets(xz_settings,screen,plane,enemys,bullets):
     # 检查是否有子弹击中敌机，有就删除
     collisions = pygame.sprite.groupcollide(bullets,enemys,True,True)
 
+    if collisions:
+        for enemys in collisions.values():
+            stats.score += xz_settings.enemy_points * len(enemys)
+            sb.prep_score()
+            enemy_down.play()
+
     if len(enemys) == 0:
         bullets.empty()
         create_fleet(xz_settings,screen,plane,enemys)
+        if stats.score % xz_settings.level_scale == 0 and stats.score != 0:
+            xz_settings.increase_speed()
+            # 提高等级
+            stats.level += 1
+            sb.prep_level()
 
 def fire_bullet(xz_settings,screen,plane,bullets):
     """射击子弹"""
@@ -107,7 +135,7 @@ def create_fleet(xz_settings,screen,plane,enemys):
     # 创建一个敌机，计算可以容纳多少敌机
     enemy = Enemy(xz_settings,screen)
     enemy_width = enemy.rect.width
-    available_space_x = xz_settings.screen_width - 2 * enemy_width
+    available_space_x = xz_settings.screen_width - enemy_width
     number_enemys_x = int(available_space_x / (2 * enemy_width))
 
     # 创建一行敌机
@@ -131,11 +159,14 @@ def change_fleet_direction(xz_settings,enemys):
         enemy.rect.y += xz_settings.fleet_drop_speed
     xz_settings.fleet_direction *= -1
 
-def plane_hit(xz_settings,stats,screen,plane,enemys,bullets):
-    """响应敌机撞击的飞船"""
+def plane_hit(xz_settings,stats,sb,screen,plane,enemys,bullets):
+    """响应敌机撞击飞船事件"""
     if stats.planes_left > 1:
         # 将planes_left -= 1
         stats.planes_left -= 1
+
+        # 更新记分牌
+        sb.prep_plane()
 
         # 清空敌机列表和子弹列表
         enemys.empty()
@@ -150,17 +181,20 @@ def plane_hit(xz_settings,stats,screen,plane,enemys,bullets):
     else:
         stats.game_active = False
         pygame.mouse.set_visible(True)
+        # 加载背景音乐
+        pygame.mixer.music.load("sounds/bgm3.ogg")
+        pygame.mixer.music.play(loops=-1, start=0.0)
 
-def check_enemy_botttom(xz_settings,stats,screen,plane,enemys,bullets):
+def check_enemy_botttom(xz_settings,stats,sb,screen,plane,enemys,bullets):
     """检查是否有敌机到达屏幕底端"""
     screen_rect = screen.get_rect()
     for enemy in enemys.sprites():
         if enemy.rect.bottom >= screen_rect.bottom:
             # 像校长被撞一样的处理
-            plane_hit(xz_settings,stats,screen,plane,enemys,bullets)
+            plane_hit(xz_settings,stats,sb,screen,plane,enemys,bullets)
             break
 
-def update_enemys(xz_settings,stats,screen,plane,enemys,bullets):
+def update_enemys(xz_settings,stats,sb,screen,plane,enemys,bullets):
     """更新敌机的位置"""
     check_fleet_edges(xz_settings,enemys)
     enemys.update()
@@ -168,7 +202,7 @@ def update_enemys(xz_settings,stats,screen,plane,enemys,bullets):
     # 检测敌机和飞船碰撞
     if pygame.sprite.spritecollideany(plane,enemys):
         print("Plane hit!!!")
-        plane_hit(xz_settings,stats,screen,plane,enemys,bullets)
+        plane_hit(xz_settings,stats,sb,screen,plane,enemys,bullets)
     
     # 检查是否有敌机越界
-    check_enemy_botttom(xz_settings,stats,screen,plane,enemys,bullets)
+    check_enemy_botttom(xz_settings,stats,sb,screen,plane,enemys,bullets)
