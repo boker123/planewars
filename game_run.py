@@ -3,7 +3,9 @@ import pygame
 from pygame.locals import *
 from settings import Settings
 from plane import Plane
+from enemy import Enemy
 from pygame.sprite import Group
+from game_stats import GameStats
 import game_functions as gf
 
 
@@ -18,12 +20,20 @@ def rungame():
     screen = pygame.display.set_mode((xz_settings.screen_width,xz_settings.screen_height))
     pygame.display.set_caption("校长的热狗")
     
+    # 创建用于统计游戏信息的实例
+    stats = GameStats(xz_settings)
+
     # 创建飞机模型
     plane = Plane(screen)
 
     # 创建一个储存子弹的编组
     bullets = Group()
+    enemys = Group()
 
+    # 创建一群敌机
+    gf.create_fleet(xz_settings,screen,plane,enemys)
+
+    # 游戏的主循环
     while True:
         # pygame.display.update()
 
@@ -31,10 +41,13 @@ def rungame():
         gf.check_events(xz_settings,screen,plane,bullets)
 
         # 射击子弹
-        gf.update_bullets(bullets)
+        gf.update_bullets(xz_settings,screen,plane,enemys,bullets)
+
+        # 移动敌机
+        gf.update_enemys(xz_settings,plane,enemys)
 
         # 绘制屏幕
-        gf.update_screen(xz_settings,screen,plane,bullets)
+        gf.update_screen(xz_settings,screen,plane,enemys,bullets)
 
 
 

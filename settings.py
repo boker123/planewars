@@ -14,8 +14,14 @@ class Settings():
 
         # 校长的设置
         self.plane_speed_factor = 3
+        self.ship_health = 3
 
         # 子弹的设置
         self.bullet_speed_factor = 5
         self.bullets_allowed = 6
 
+        # 敌机的设置
+        self.enemy_speed_factor = 1
+        self.fleet_drop_speed = 10
+        # 控制左右移 1为右移,-1为左移
+        self.fleet_direction = 1
