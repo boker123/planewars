@@ -49,8 +49,12 @@ def rungame():
     # 创建一群敌机
     gf.create_fleet(xz_settings,screen,plane,enemys)
 
+    # 游戏循环运行次数
+    time = 0
+
     # 游戏的主循环
     while True:
+        time = (time + 1) % xz_settings.come_time
         # 响应事件
         gf.check_events(xz_settings,screen,stats,sb,play_button,plane,enemys,bullets,bullet_sound)
         if stats.game_active:

@@ -23,9 +23,10 @@ class Settings():
 
         # 敌机的设置
         self.enemy_speed_factor = 1
-        self.fleet_drop_speed = 10
+        self.fleet_drop_speed = 1
         # 控制左右移 1为右移,-1为左移
         self.fleet_direction = 1
+        self.come_time = 50
 
         # 节奏加快的方式
         self.speedup_scale = 1.1

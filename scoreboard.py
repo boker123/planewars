@@ -35,7 +35,7 @@ class Scoreboard():
 
     def prep_level(self):
         """将等级渲染为图像"""
-        self.level_image = self.font.render(str(self.stats.level),True,self.text_color,self.xz_settings.bg_color)
+        self.level_image = self.font.render(str(self.stats.level),True,self.text_color)
 
         # 将等级放在得分下方
         self.level_rect = self.level_image.get_rect()

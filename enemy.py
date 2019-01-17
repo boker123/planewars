@@ -4,7 +4,7 @@ from pygame.sprite import Sprite
 class Enemy(Sprite):
     """表示单位敌机的类"""
 
-    def __init__(self,xz_settings,screen):
+    def __init__(self,xz_settings,seat,screen):
         """初始化外新人设置初始位置"""
         super(Enemy,self).__init__()
         self.screen = screen
@@ -15,8 +15,7 @@ class Enemy(Sprite):
         self.rect = self.image.get_rect()
 
         # 设置外星人初始的位置
-        self.rect.x = self.rect.width
-        self.rect.y = self.rect.height
+        self.rect.topleft = seat
 
     def blitme(self):
         self.screen.blit(self.image,self.rect)
@@ -32,6 +31,7 @@ class Enemy(Sprite):
     def update(self):
         """向右移动外新人"""
         self.rect.x += (self.xz_settings.enemy_speed_factor * self.xz_settings.fleet_direction)
+        self.rect.y += self.xz_settings.fleet_drop_speed
     
     
 

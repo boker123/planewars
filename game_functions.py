@@ -133,18 +133,19 @@ def create_fleet(xz_settings,screen,plane,enemys):
     """创建外星人群"""
 
     # 创建一个敌机，计算可以容纳多少敌机
-    enemy = Enemy(xz_settings,screen)
-    enemy_width = enemy.rect.width
-    available_space_x = xz_settings.screen_width - enemy_width
-    number_enemys_x = int(available_space_x / (2 * enemy_width))
+    if ticks == 0
+        enemy = Enemy(xz_settings,(random.randint(0,xz_settings.screen_width),screen)
+        enemy_width = enemy.rect.width
+        available_space_x = xz_settings.screen_width - enemy_width
+        number_enemys_x = int(available_space_x / (2 * enemy_width))
 
-    # 创建一行敌机
-    for enemy_number in range(number_enemys_x):
-        # 创建一个敌机加入行
-        enemy = Enemy(xz_settings,screen)
-        enemy.x = enemy_width + 2 * enemy_width * enemy_number
-        enemy.rect.x = enemy.x
-        enemys.add(enemy)
+        # 创建一行敌机
+        for enemy_number in range(number_enemys_x):
+            # 创建一个敌机加入行
+            enemy = Enemy(xz_settings,,screen)
+            enemy.x = enemy_width + 2 * enemy_width * enemy_number
+            enemy.rect.x = enemy.x
+            enemys.add(enemy)
 
 def check_fleet_edges(xz_settings,enemys):
     """有敌机到达边缘就反向移动"""
