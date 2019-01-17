@@ -113,15 +113,20 @@ def update_bullets(xz_settings,screen,stats,sb,plane,enemys,bullets,enemy_down):
             stats.score += xz_settings.enemy_points * len(enemys)
             sb.prep_score()
             enemy_down.play()
-
-    if len(enemys) == 0:
-        bullets.empty()
-        # create_fleet(xz_settings,screen,plane,enemys)
         if stats.score % xz_settings.level_scale == 0 and stats.score != 0:
             xz_settings.increase_speed()
             # 提高等级
             stats.level += 1
             sb.prep_level()
+
+    # if len(enemys) == 0:
+    #     bullets.empty()
+    #     # create_fleet(xz_settings,screen,plane,enemys)
+    #     # if stats.score % xz_settings.level_scale == 0 and stats.score != 0:
+    #     #     xz_settings.increase_speed()
+    #     #     # 提高等级
+    #     #     stats.level += 1
+    #     #     sb.prep_level()
 
 def fire_bullet(xz_settings,screen,plane,bullets):
     """射击子弹"""
