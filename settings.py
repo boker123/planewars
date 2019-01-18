@@ -6,6 +6,7 @@ class Settings():
 
     def __init__(self):
         """初始化游戏静态设置"""
+        self.time = 0
         # 屏幕设置
         self.bg_color = (230,230,230)
         self.bg_img = pygame.image.load('images/bg6.jpg')
@@ -23,9 +24,11 @@ class Settings():
 
         # 敌机的设置
         self.enemy_speed_factor = 1
-        self.fleet_drop_speed = 10
+        self.fleet_drop_speed = 1
+        self.enemys_sum = 10
         # 控制左右移 1为右移,-1为左移
         self.fleet_direction = 1
+        self.come_time = 80
 
         # 节奏加快的方式
         self.speedup_scale = 1.1

@@ -1,5 +1,6 @@
 import sys
 import pygame
+import random
 from bullet import Bullet
 from enemy import Enemy
 from time import sleep
@@ -16,27 +17,27 @@ def check_events(xz_settings,screen,stats,sb,play_button,plane,enemys,bullets,bu
                     bullet_sound.play()
                     fire_bullet(xz_settings,screen,plane,bullets)
                 elif event.key == pygame.K_q:
-                    print("q")
+                    # print("q")
                     sys.exit()
                     pygame.quit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x,mouse_y = pygame.mouse.get_pos()
-                print(mouse_x,mouse_y)
+                # print(mouse_x,mouse_y)
                 check_play_button(xz_settings,screen,stats,sb,play_button,plane,enemys,bullets,mouse_x,mouse_y)
 
     # 让校长连续移动
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT] and plane.rect.left > 0:
-        print("LEFT")
+        # print("LEFT")
         plane.rect.centerx -= xz_settings.plane_speed_factor
     if keys[pygame.K_RIGHT] and plane.rect.right < plane.screen_rect.right:
-        print("RIGHT")
+        # print("RIGHT")
         plane.rect.centerx += xz_settings.plane_speed_factor
     if keys[pygame.K_UP] and plane.rect.top > 0:
-        print("UP")
+        # print("UP")
         plane.rect.centery -= xz_settings.plane_speed_factor
     if keys[pygame.K_DOWN] and plane.rect.bottom < plane.screen_rect.bottom:
-        print("DOWN")
+        # print("DOWN")
         plane.rect.centery += xz_settings.plane_speed_factor
 
 def check_play_button(xz_settings,screen,stats,sb,play_button,plane,enemys,bullets,
@@ -68,7 +69,7 @@ mouse_x,mouse_y):
             bullets.empty()
 
             # 创建一群敌机，让飞船居中
-            create_fleet(xz_settings,screen,plane,enemys)
+            # create_fleet(xz_settings,screen,plane,enemys)
             plane.center_ship()
 
 def update_screen(xz_settings,stats,sb,screen,plane,enemys,bullets,play_button):
@@ -102,7 +103,7 @@ def update_bullets(xz_settings,screen,stats,sb,plane,enemys,bullets,enemy_down):
     for bullet in bullets.copy():
             if bullet.rect.bottom <= 0:
                     bullets.remove(bullet)
-    print(len(bullets))
+    # print(len(bullets))
 
     # 检查是否有子弹击中敌机，有就删除
     collisions = pygame.sprite.groupcollide(bullets,enemys,True,True)
@@ -112,15 +113,20 @@ def update_bullets(xz_settings,screen,stats,sb,plane,enemys,bullets,enemy_down):
             stats.score += xz_settings.enemy_points * len(enemys)
             sb.prep_score()
             enemy_down.play()
-
-    if len(enemys) == 0:
-        bullets.empty()
-        create_fleet(xz_settings,screen,plane,enemys)
         if stats.score % xz_settings.level_scale == 0 and stats.score != 0:
             xz_settings.increase_speed()
             # 提高等级
             stats.level += 1
             sb.prep_level()
+
+    # if len(enemys) == 0:
+    #     bullets.empty()
+    #     # create_fleet(xz_settings,screen,plane,enemys)
+    #     # if stats.score % xz_settings.level_scale == 0 and stats.score != 0:
+    #     #     xz_settings.increase_speed()
+    #     #     # 提高等级
+    #     #     stats.level += 1
+    #     #     sb.prep_level()
 
 def fire_bullet(xz_settings,screen,plane,bullets):
     """射击子弹"""
@@ -131,33 +137,18 @@ def fire_bullet(xz_settings,screen,plane,bullets):
 
 def create_fleet(xz_settings,screen,plane,enemys):
     """创建外星人群"""
-
     # 创建一个敌机，计算可以容纳多少敌机
-    enemy = Enemy(xz_settings,screen)
-    enemy_width = enemy.rect.width
-    available_space_x = xz_settings.screen_width - enemy_width
-    number_enemys_x = int(available_space_x / (2 * enemy_width))
-
-    # 创建一行敌机
-    for enemy_number in range(number_enemys_x):
-        # 创建一个敌机加入行
-        enemy = Enemy(xz_settings,screen)
-        enemy.x = enemy_width + 2 * enemy_width * enemy_number
-        enemy.rect.x = enemy.x
+    if xz_settings.time == 0 and len(enemys) < xz_settings.enemys_sum:
+        enemy0 = Enemy(xz_settings,(0,0),screen)
+        enemy = Enemy(xz_settings,(random.randint(0,xz_settings.screen_width - enemy0.rect.width),0),screen)
         enemys.add(enemy)
 
 def check_fleet_edges(xz_settings,enemys):
     """有敌机到达边缘就反向移动"""
     for enemy in enemys.sprites():
         if enemy.check_edges():
-            change_fleet_direction(xz_settings,enemys)
+            enemy.direction *= -1
             break
-
-def change_fleet_direction(xz_settings,enemys):
-    """将整群敌机向下移，改变他们的方向"""
-    for enemy in enemys.sprites():
-        enemy.rect.y += xz_settings.fleet_drop_speed
-    xz_settings.fleet_direction *= -1
 
 def plane_hit(xz_settings,stats,sb,screen,plane,enemys,bullets):
     """响应敌机撞击飞船事件"""
@@ -173,7 +164,7 @@ def plane_hit(xz_settings,stats,sb,screen,plane,enemys,bullets):
         bullets.empty()
 
         # 创建一群新的敌机，将飞船移动回初始位置
-        create_fleet(xz_settings,screen,plane,enemys)
+        # create_fleet(xz_settings,screen,plane,enemys)
         plane.center_ship()
         
         # 暂停
@@ -198,10 +189,10 @@ def update_enemys(xz_settings,stats,sb,screen,plane,enemys,bullets):
     """更新敌机的位置"""
     check_fleet_edges(xz_settings,enemys)
     enemys.update()
-
+    create_fleet(xz_settings,screen,plane,enemys)
     # 检测敌机和飞船碰撞
     if pygame.sprite.spritecollideany(plane,enemys):
-        print("Plane hit!!!")
+        # print("Plane hit!!!")
         plane_hit(xz_settings,stats,sb,screen,plane,enemys,bullets)
     
     # 检查是否有敌机越界
