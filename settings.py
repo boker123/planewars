@@ -9,7 +9,8 @@ class Settings():
         self.time = 0
         # 屏幕设置
         self.bg_color = (230,230,230)
-        self.bg_img = pygame.image.load('images/bg6.jpg')
+        self.bg_img = pygame.image.load('images/bg5.jpg')
+        self.bg_img2 = pygmae.image.load('images/bg5.jpg')
         self.bg_img_rect = self.bg_img.get_rect()
         self.screen_width = self.bg_img_rect.width
         self.screen_height = self.bg_img_rect.height
@@ -28,7 +29,7 @@ class Settings():
         self.enemys_sum = 10
         # 控制左右移 1为右移,-1为左移
         self.fleet_direction = 1
-        self.come_time = 80
+        self.come_time = 99
 
         # 节奏加快的方式
         self.speedup_scale = 1.1

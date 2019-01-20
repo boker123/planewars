@@ -137,7 +137,7 @@ def fire_bullet(xz_settings,screen,plane,bullets):
 
 def create_fleet(xz_settings,screen,plane,enemys):
     """创建外星人群"""
-    # 创建一个敌机，计算可以容纳多少敌机
+    # 创建一个敌机
     if xz_settings.time == 0 and len(enemys) < xz_settings.enemys_sum:
         enemy0 = Enemy(xz_settings,(0,0),screen)
         enemy = Enemy(xz_settings,(random.randint(0,xz_settings.screen_width - enemy0.rect.width),0),screen)

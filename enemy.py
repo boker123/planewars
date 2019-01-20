@@ -1,4 +1,5 @@
 import pygame
+import random
 from pygame.sprite import Sprite
 
 class Enemy(Sprite):
@@ -16,7 +17,7 @@ class Enemy(Sprite):
 
         # 设置外星人初始的位置
         self.rect.topleft = seat
-        self.direction = xz_settings.fleet_direction
+        self.direction = xz_settings.fleet_direction * pow(-1,random.randint(1,10))
 
     def blitme(self):
         self.screen.blit(self.image,self.rect)
