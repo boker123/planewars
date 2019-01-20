@@ -77,7 +77,9 @@ def update_screen(xz_settings,stats,sb,screen,plane,enemys,bullets,play_button):
 
     # 绘制屏幕
     screen.fill(xz_settings.bg_color)
-    screen.blit(xz_settings.bg_img,(0,0))
+    xz_settings.reaction()
+    screen.blit(xz_settings.bg_img,(0,xz_settings.bg_img_rect.y))
+    screen.blit(xz_settings.bg_img2,(0,xz_settings.bg_img2_rect.y))
     for bullet in bullets.sprites():
         bullet.draw_bullet()
     plane.blitme()

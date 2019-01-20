@@ -10,10 +10,15 @@ class Settings():
         # 屏幕设置
         self.bg_color = (230,230,230)
         self.bg_img = pygame.image.load('images/bg5.jpg')
-        self.bg_img2 = pygmae.image.load('images/bg5.jpg')
+        self.bg_img2 = pygame.image.load('images/bg5.jpg')
         self.bg_img_rect = self.bg_img.get_rect()
+        self.bg_img2_rect = self.bg_img2.get_rect()
+        self.bg_img_rect.y = 0
+        self.bg_img2_rect.y = -self.bg_img2_rect.height
         self.screen_width = self.bg_img_rect.width
         self.screen_height = self.bg_img_rect.height
+
+        self.screen_speed = 1
 
         # 校长的设置
         self.plane_speed_factor = 3
@@ -58,3 +63,10 @@ class Settings():
 
         self.enemy_points = int(self.enemy_points * self.score_scale)
 
+    def reaction(self):
+        self.bg_img_rect.y += self.screen_speed
+        self.bg_img2_rect.y += self.screen_speed
+        if self.bg_img_rect.y >= self.bg_img_rect.height:
+            self.bg_img_rect.y = -self.bg_img_rect.height
+        if self.bg_img2_rect.y >= self.bg_img2_rect.height:
+            self.bg_img2_rect.y = -self.bg_img2_rect.height
