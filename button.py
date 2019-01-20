@@ -1,7 +1,7 @@
 import pygame.font
 
 class Button():
-    def __init__(self,xz_settings,screen,msg):
+    def __init__(self,xz_settings,screen,msg,delt):
         """初始化按钮的属性"""
         self.screen = screen
         self.screen_rect = screen.get_rect()
@@ -14,7 +14,8 @@ class Button():
 
         # 创建矩形对象
         self.rect = pygame.Rect(0,0,self.width,self.height)
-        self.rect.center = self.screen_rect.center
+        self.rect.centerx = self.screen_rect.centerx
+        self.rect.centery = self.screen_rect.centery - delt
 
         # 按钮的标签只创建一次
         self.prep_msg(msg)

@@ -5,7 +5,7 @@ from bullet import Bullet
 from enemy import Enemy
 from time import sleep
 
-def check_events(xz_settings,screen,stats,sb,play_button,plane,enemys,bullets,bullet_sound):
+def check_events(xz_settings,screen,stats,sb,play_button,help_button,plane,enemys,bullets,bullet_sound):
     """响应按键和鼠标事件"""
     for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -23,7 +23,7 @@ def check_events(xz_settings,screen,stats,sb,play_button,plane,enemys,bullets,bu
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x,mouse_y = pygame.mouse.get_pos()
                 # print(mouse_x,mouse_y)
-                check_play_button(xz_settings,screen,stats,sb,play_button,plane,enemys,bullets,mouse_x,mouse_y)
+                check_play_button(xz_settings,screen,stats,sb,play_button,help_button,plane,enemys,bullets,mouse_x,mouse_y)
 
     # 让校长连续移动
     keys = pygame.key.get_pressed()
@@ -40,7 +40,7 @@ def check_events(xz_settings,screen,stats,sb,play_button,plane,enemys,bullets,bu
         # print("DOWN")
         plane.rect.centery += xz_settings.plane_speed_factor
 
-def check_play_button(xz_settings,screen,stats,sb,play_button,plane,enemys,bullets,
+def check_play_button(xz_settings,screen,stats,sb,play_button,help_button,plane,enemys,bullets,
 mouse_x,mouse_y):
     """在点击Play时开始游戏"""
     button_clicked = play_button.rect.collidepoint(mouse_x,mouse_y)
@@ -51,28 +51,30 @@ mouse_x,mouse_y):
         # 隐藏光标
         pygame.mouse.set_visible(False)
 
-        if play_button.rect.collidepoint(mouse_x,mouse_y):
-            stats.reset_stats()
-            stats.game_active = True
+        stats.reset_stats()
+        stats.game_active = True
 
-            # 创建游戏时的背景音乐
-            pygame.mixer.music.load("sounds/bgm4.mp3")
-            pygame.mixer.music.play(loops=-1, start=0.0)
+        # 创建游戏时的背景音乐
+        pygame.mixer.music.load("sounds/bgm4.mp3")
+        pygame.mixer.music.play(loops=-1, start=0.0)
 
-            # 重置记分牌图像
-            sb.prep_score()
-            sb.prep_level()
-            sb.prep_plane()
+        # 重置记分牌图像
+        sb.prep_score()
+        sb.prep_level()
+        sb.prep_plane()
 
-            # 清空敌机列表和子弹列表
-            enemys.empty()
-            bullets.empty()
+        # 清空敌机列表和子弹列表
+        enemys.empty()
+        bullets.empty()
 
-            # 创建一群敌机，让飞船居中
-            # create_fleet(xz_settings,screen,plane,enemys)
-            plane.center_ship()
+        # 创建一群敌机，让飞船居中
+        # create_fleet(xz_settings,screen,plane,enemys)
+        plane.center_plane()
+    # elif help_button.rect.collidepoint(mouse_x,mouse_y):
+        
 
-def update_screen(xz_settings,stats,sb,screen,plane,enemys,bullets,play_button):
+
+def update_screen(xz_settings,stats,sb,screen,plane,enemys,bullets,play_button,help_button):
     """ 更新屏幕上的图像，并且切换到屏幕"""
 
     # 绘制屏幕
@@ -88,9 +90,10 @@ def update_screen(xz_settings,stats,sb,screen,plane,enemys,bullets,play_button):
     # 显示计分器
     sb.show_score()
 
-    # 如果游戏处于非激活状态，就绘制Play按钮，重新加载背景音乐
+    # 如果游戏处于非激活状态，就绘制Play按钮，和Help按钮
     if not stats.game_active:
         play_button.draw_button()
+        help_button.draw_button()
 
     # 让最近绘制的屏幕可见
     pygame.display.flip()
@@ -167,7 +170,7 @@ def plane_hit(xz_settings,stats,sb,screen,plane,enemys,bullets):
 
         # 创建一群新的敌机，将飞船移动回初始位置
         # create_fleet(xz_settings,screen,plane,enemys)
-        plane.center_ship()
+        plane.center_plane()
         
         # 暂停
         sleep(0.5)
