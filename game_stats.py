@@ -6,6 +6,7 @@ class GameStats():
         self.xz_settings = xz_settings
         self.reset_stats()
         self.game_active = False
+        self.game_help = False
 
     def reset_stats(self):
         """初始化可变信息"""

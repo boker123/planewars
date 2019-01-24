@@ -5,7 +5,7 @@ from bullet import Bullet
 from enemy import Enemy
 from time import sleep
 
-def check_events(xz_settings,screen,stats,sb,play_button,help_button,plane,enemys,bullets,bullet_sound):
+def check_events(xz_settings,screen,stats,sb,play_button,help_button,exit_button,plane,enemys,bullets,helpset,bullet_sound):
     """响应按键和鼠标事件"""
     for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -23,7 +23,7 @@ def check_events(xz_settings,screen,stats,sb,play_button,help_button,plane,enemy
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x,mouse_y = pygame.mouse.get_pos()
                 # print(mouse_x,mouse_y)
-                check_play_button(xz_settings,screen,stats,sb,play_button,help_button,plane,enemys,bullets,mouse_x,mouse_y)
+                check_play_button(xz_settings,screen,stats,sb,play_button,help_button,exit_button,plane,enemys,bullets,helpset,mouse_x,mouse_y)
 
     # 让校长连续移动
     keys = pygame.key.get_pressed()
@@ -40,7 +40,7 @@ def check_events(xz_settings,screen,stats,sb,play_button,help_button,plane,enemy
         # print("DOWN")
         plane.rect.centery += xz_settings.plane_speed_factor
 
-def check_play_button(xz_settings,screen,stats,sb,play_button,help_button,plane,enemys,bullets,
+def check_play_button(xz_settings,screen,stats,sb,play_button,help_button,exit_button,plane,enemys,bullets,helpset,
 mouse_x,mouse_y):
     """在点击Play时开始游戏"""
     button_clicked = play_button.rect.collidepoint(mouse_x,mouse_y)
@@ -51,6 +51,7 @@ mouse_x,mouse_y):
         # 隐藏光标
         pygame.mouse.set_visible(False)
 
+        # 重置状态，激活游戏
         stats.reset_stats()
         stats.game_active = True
 
@@ -71,29 +72,51 @@ mouse_x,mouse_y):
         plane.center_plane()
     elif help_button.rect.collidepoint(mouse_x,mouse_y):
         print("help")
-        # 绘制背景图片
+        # 进入帮助页面
+        stats.game_help = True
+
+    elif helpset.back_button_rect.collidepoint(mouse_x,mouse_y):
+        print("back")
+        stats.game_help = False
+
+    elif exit_button.rect.collidepoint(mouse_x,mouse_y):
+        print("Exit")
+        # 退出游戏
+        sys.exit()
+        pygame.quit()
+
         
 
-def update_screen(xz_settings,stats,sb,screen,plane,enemys,bullets,play_button,help_button):
+def update_screen(xz_settings,stats,sb,screen,plane,enemys,bullets,helpset,play_button,help_button,exit_button):
     """ 更新屏幕上的图像，并且切换到屏幕"""
 
-    # 绘制屏幕
+    # 绘制屏幕底色
     screen.fill(xz_settings.bg_color)
-    xz_settings.reaction()
-    screen.blit(xz_settings.bg_img,(0,xz_settings.bg_img_rect.y))
-    screen.blit(xz_settings.bg_img2,(0,xz_settings.bg_img2_rect.y))
-    for bullet in bullets.sprites():
-        bullet.draw_bullet()
-    plane.blitme()
-    enemys.draw(screen)
+    
+    # 如果游戏开始就绘制滚动背景
+    if stats.game_active and not stats.game_help:
+        xz_settings.reaction()
+        screen.blit(xz_settings.bg_img,(0,xz_settings.bg_img_rect.y))
+        screen.blit(xz_settings.bg_img2,(0,xz_settings.bg_img2_rect.y))
+        for bullet in bullets.sprites():
+            bullet.draw_bullet()
+        plane.blitme()
+        enemys.draw(screen)
 
-    # 显示计分器
-    sb.show_score()
+        # 显示计分器
+        sb.show_score()
 
     # 如果游戏处于非激活状态，就绘制Play按钮，和Help按钮
-    if not stats.game_active:
+    elif not stats.game_active and not stats.game_help:
+        screen.blit(xz_settings.bg_img,(0,0))
         play_button.draw_button()
         help_button.draw_button()
+        exit_button.draw_button()
+ 
+    # 如果点击帮助界面就来到帮助界面
+    elif stats.game_help:
+        helpset.back_blitme()
+        helpset.draw_help()
 
     # 让最近绘制的屏幕可见
     pygame.display.flip()

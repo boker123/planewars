@@ -8,6 +8,7 @@ from button import Button
 from scoreboard import Scoreboard
 from pygame.sprite import Group
 from game_stats import GameStats
+from helpset import Help
 import game_functions as gf
 
 
@@ -26,15 +27,19 @@ def rungame():
     pygame.mixer.music.load("sounds/bgm3.ogg")
     pygame.mixer.music.play(loops=-1, start=0.0)
     pygame.mixer.music.set_volume(0.2)
+
     # 创建音效
     enemy_down = pygame.mixer.Sound("sounds/enemy2_down.wav")
     bullet_sound = pygame.mixer.Sound("sounds/bullet.wav")
 
     # 创建Play按钮
-    play_button = Button(xz_settings,screen,"Play",90)
-    help_button = Button(xz_settings,screen,"Help",0)
-    # 创建用于统计游戏信息的实例
+    play_button = Button(xz_settings,screen,"Play",200)
+    help_button = Button(xz_settings,screen,"Help",100)
+    exit_button = Button(xz_settings,screen,"Exit",0)
+
+    # 创建用于统计游戏信息的实例，和帮助界面
     stats = GameStats(xz_settings)
+    helpset = Help(screen)
 
     # 创建记分牌
     sb = Scoreboard(xz_settings,screen,stats)
@@ -51,7 +56,7 @@ def rungame():
         
         # print(xz_settings.time)
         # 响应事件
-        gf.check_events(xz_settings,screen,stats,sb,play_button,help_button,plane,enemys,bullets,bullet_sound)
+        gf.check_events(xz_settings,screen,stats,sb,play_button,help_button,exit_button,plane,enemys,bullets,helpset,bullet_sound)
         if stats.game_active:
                 # 记录循环次数
                 xz_settings.time = (xz_settings.time + 1) % xz_settings.come_time
@@ -64,7 +69,7 @@ def rungame():
                 
 
         # 绘制屏幕
-        gf.update_screen(xz_settings,stats,sb,screen,plane,enemys,bullets,play_button,help_button)
+        gf.update_screen(xz_settings,stats,sb,screen,plane,enemys,bullets,helpset,play_button,help_button,exit_button)
 
 # 运行游戏
 if __name__ == "__main__":

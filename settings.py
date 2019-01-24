@@ -8,7 +8,7 @@ class Settings():
         """初始化游戏静态设置"""
         self.time = 0
         # 屏幕设置
-        self.bg_color = (230,230,230)
+        self.bg_color = (135,206,250)
         self.bg_img = pygame.image.load('images/bg5.jpg')
         self.bg_img2 = pygame.image.load('images/bg55.jpg')
         self.bg_img_rect = self.bg_img.get_rect()
