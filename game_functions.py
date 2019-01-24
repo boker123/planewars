@@ -67,12 +67,12 @@ mouse_x,mouse_y):
         enemys.empty()
         bullets.empty()
 
-        # 创建一群敌机，让飞船居中
-        # create_fleet(xz_settings,screen,plane,enemys)
+        # 让飞船居中
         plane.center_plane()
-    # elif help_button.rect.collidepoint(mouse_x,mouse_y):
+    elif help_button.rect.collidepoint(mouse_x,mouse_y):
+        print("help")
+        # 绘制背景图片
         
-
 
 def update_screen(xz_settings,stats,sb,screen,plane,enemys,bullets,play_button,help_button):
     """ 更新屏幕上的图像，并且切换到屏幕"""
@@ -123,15 +123,6 @@ def update_bullets(xz_settings,screen,stats,sb,plane,enemys,bullets,enemy_down):
             # 提高等级
             stats.level += 1
             sb.prep_level()
-
-    # if len(enemys) == 0:
-    #     bullets.empty()
-    #     # create_fleet(xz_settings,screen,plane,enemys)
-    #     # if stats.score % xz_settings.level_scale == 0 and stats.score != 0:
-    #     #     xz_settings.increase_speed()
-    #     #     # 提高等级
-    #     #     stats.level += 1
-    #     #     sb.prep_level()
 
 def fire_bullet(xz_settings,screen,plane,bullets):
     """射击子弹"""

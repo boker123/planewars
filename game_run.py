@@ -61,6 +61,7 @@ def rungame():
 
                 # 移动敌机
                 gf.update_enemys(xz_settings,stats,sb,screen,plane,enemys,bullets)
+                
 
         # 绘制屏幕
         gf.update_screen(xz_settings,stats,sb,screen,plane,enemys,bullets,play_button,help_button)

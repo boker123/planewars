@@ -21,6 +21,7 @@ class Enemy(Sprite):
 
     def blitme(self):
         self.screen.blit(self.image,self.rect)
+        
     def check_edges(self):
         """如果敌机到达边缘就返回True"""
         screen_rect = self.screen.get_rect()
